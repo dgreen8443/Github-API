@@ -1,6 +1,8 @@
-import requests, json
+import requests
+import json
 import subprocess
 import sys
+import operator
 
 with  open('./authkey.txt', 'r') as reader:
 	access_token = reader.read()
@@ -30,11 +32,20 @@ def find_repos(user):
 		repo_list.append(i["full_name"])
 		res = get_language(i["full_name"])
 		user_lang.append(res)
-	print(user_lang)
 	for i in user_lang:
 		if i == {'blank' : 0}:
 			user_lang.remove(i)
 	print(user_lang)
+	user_fav = {}
+	for dict in user_lang:
+		for key,value in dict.items():
+			if user_fav.has_key(key):
+				user_fav[key] = user_fav[key] + value
+			else:	
+				user_fav[key] = value
+	print (user_fav)
+	user_favourite_language = max(user_fav.iteritems(), key = operator.itemgetter(1))[0]
+	print(user_favourite_language)
 
 
 
@@ -73,7 +84,3 @@ for i in user_list:
 
 
 
-response = requests.get('https://api.github.com/repos/dgreen8443/SWENG-Group-9/languages',auth=(username, access_token))#headers = my_headers)
-y = response.json() 
-#print(json.dumps(y, indent = 4))
-#
