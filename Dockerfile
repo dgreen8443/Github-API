@@ -1,44 +1,10 @@
-# in case we ever do any installs
-# lets make them non-interactive
-ARG DEBIAN_FRONTEND=noninteractive
+FROM python:3
 
-###### stage 1 - build image with dependencies
+WORKDIR /usr/src/github-api
 
-# use existing haskell image as our base
-FROM python:3 as base-compile-image
 
-WORKDIR /opt/github-get
-RUN stack update
+#RUN pip install --no-cache-dir -r requirements.txt
 
-# copy the yaml and cabal files
-COPY Access.py ./
-# Docker will cache this command as a layer, savinf us the trouble or rebuilding
-# dependencies unless we change fioles above.
-RUN stack build --only-dependencies -j4
+COPY ./Access.py .
 
-##### stage 2 - compile the code
-
-FROM base-compile-image as compile-image
-
-COPY . /opt/github-get
-# do the build
-RUN stack build --system-ghc
-
-##### stage 3 - build small production image
-
-FROM ubuntu:18.04 as runtime-image
-
-ARG DEBIAN_FRONTEND=noninteractive
-RUN echo "building runtime-image" && \
-    apt-get update && \
-    apt-get install -y libssl1.0.0 && \
-    apt-get install -y netbase && \
-    apt-get install -y ca-certificates && \
-	apt-get install -y python
-
-    
-RUN mkdir -p /opt/github-get
-WORKDIR /opt/github-get
-ENTRYPOINT ["/opt/github-get/github-get-exe"]
-COPY --from=compile-image /opt/github-get/.stack-work/dist/x86_64-linux/Cabal-3.0.1.0/build/github-get-exe/github-get-exe .
-CMD [""]
+CMD [ "python", "./Access.py" ]
