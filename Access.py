@@ -12,10 +12,10 @@ reader.close()
 my_headers = {'{username}' : '{access_token}'}
 user_list = []
 repo_list = []
-
+language_count = {}
 
 def get_users(user):
-	url = 'https://api.github.com/users/' + user + '/following'
+	url = 'https://api.github.com/users/' + user + '/followers'
 	response = requests.get(url,auth=(username, access_token))#headers = my_headers)
 	
 	for i in response.json():
@@ -35,7 +35,7 @@ def find_repos(user):
 	for i in user_lang:
 		if i == {'blank' : 0}:
 			user_lang.remove(i)
-	print(user_lang)
+	#print(user_lang)
 	user_fav = {}
 	for dict in user_lang:
 		for key,value in dict.items():
@@ -44,8 +44,18 @@ def find_repos(user):
 			else:	
 				user_fav[key] = value
 	print (user_fav)
-	user_favourite_language = max(user_fav.iteritems(), key = operator.itemgetter(1))[0]
+	if user_fav != {}:
+		user_favourite_language = max(user_fav.iteritems(), key = operator.itemgetter(1))[0]	
+	else: 
+		user_favourite_language = 'Nothing'
 	print(user_favourite_language)
+	return user_favourite_language
+
+def favourite_language(user_favourites):
+	favourite = {'':0}
+	#for i in user_favourites:
+	#	if user_favourites[i] > fa
+
 
 
 
@@ -76,11 +86,14 @@ def get_language(repo):
 	return max_lang
 	
 
-get_users('dgreen8443')
+get_users('esjmb')
 print(user_list)
 for i in user_list:
-	find_repos(i)
-#print(repo_list)
+	returned_language = find_repos(i)
+	if language_count.has_key(returned_language):
+		language_count[returned_language] = language_count[returned_language] + 1
+	else: 
+		language_count[returned_language] = 1
 
-
+print(language_count)
 
