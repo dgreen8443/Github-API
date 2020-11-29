@@ -4,15 +4,22 @@ import subprocess
 import sys
 import operator
 
-with  open('./authkey.txt', 'r') as reader:
-	access_token = reader.read()
-with open('./user.txt', 'r') as reader:
-	username = reader.read()
-reader.close()
+#with  open('./authkey.txt', 'r') as reader:
+#	access_token = reader.read()
+#with open('./user.txt', 'r') as reader:
+#	username = reader.read()
+access_token = sys.argv[3]
+username = sys.argv[2]
+target = sys.argv[1]
+
+
+#reader.close()
 my_headers = {'{username}' : '{access_token}'}
 user_list = []
 repo_list = []
 language_count = {}
+
+
 
 def get_users(user):
 	url = 'https://api.github.com/users/' + user + '/followers'
@@ -33,7 +40,7 @@ def find_repos(user):
 		res = get_language(i["full_name"])
 		user_lang.append(res)
 	for i in user_lang:
-		if i == {'blank' : 0}:
+		if i == {'' : 0}:
 			user_lang.remove(i)
 	#print(user_lang)
 	user_fav = {}
@@ -43,18 +50,13 @@ def find_repos(user):
 				user_fav[key] = user_fav[key] + value
 			else:	
 				user_fav[key] = value
-	print (user_fav)
+	#print (user_fav)
 	if user_fav != {}:
 		user_favourite_language = max(user_fav.iteritems(), key = operator.itemgetter(1))[0]	
 	else: 
 		user_favourite_language = 'Nothing'
-	print(user_favourite_language)
+	#print(user_favourite_language)
 	return user_favourite_language
-
-def favourite_language(user_favourites):
-	favourite = {'':0}
-	#for i in user_favourites:
-	#	if user_favourites[i] > fa
 
 
 
@@ -73,7 +75,7 @@ def get_language(repo):
 		repo_dict[repo_lang[i]] = y[repo_lang[i]]
 		i = i+1
 	
-	max_lang = {"blank": 0}
+	max_lang = {'': 0}
 
 	#only take the language with most lines of code
 	for i in repo_dict:
@@ -85,11 +87,14 @@ def get_language(repo):
 	
 	return max_lang
 	
-
-get_users('esjmb')
+target_fav = find_repos(target)
+print(target_fav)
+get_users(target)
 print(user_list)
 for i in user_list:
 	returned_language = find_repos(i)
+	if returned_language == '':
+		returned_language = 'Nothing'
 	if language_count.has_key(returned_language):
 		language_count[returned_language] = language_count[returned_language] + 1
 	else: 
