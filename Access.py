@@ -3,15 +3,22 @@ import json
 import subprocess
 import sys
 import operator
+import numpy as np
+import matplotlib as mp
+import matplotlib.pyplot as pl
+mp.use("TkAgg")
 
-#with  open('./authkey.txt', 'r') as reader:
-#	access_token = reader.read()
-#with open('./user.txt', 'r') as reader:
-#	username = reader.read()
-access_token = sys.argv[3]
-username = sys.argv[2]
-target = sys.argv[1]
+if len(sys.argv) < 2:
+	with  open('./authkey.txt', 'r') as reader:
+		access_token = reader.read()
+	with open('./user.txt', 'r') as reader:
+		username = reader.read()
+	target = 'dgreen8443'
 
+else: 
+	access_token = sys.argv[3]
+	username = sys.argv[2]
+	target = sys.argv[1]
 
 #reader.close()
 my_headers = {'{username}' : '{access_token}'}
@@ -24,10 +31,13 @@ language_count = {}
 def get_users(user):
 	url = 'https://api.github.com/users/' + user + '/followers'
 	response = requests.get(url,auth=(username, access_token))#headers = my_headers)
-	
 	for i in response.json():
 		user_list.append(i["login"])
 	
+def maxLanguages(dictionary):
+	max_key = max(dictionary, key=dictionary.get)
+	return max_key
+
 
 	## goes through a user's list of public repos and finds the language that has the most lines of code in it
 def find_repos(user): 
@@ -42,17 +52,17 @@ def find_repos(user):
 	for i in user_lang:
 		if i == {'' : 0}:
 			user_lang.remove(i)
-	#print(user_lang)
+	
 	user_fav = {}
-	for dict in user_lang:
-		for key,value in dict.items():
-			if user_fav.has_key(key):
+	for dictionary in user_lang:
+		for key,value in dictionary.items():
+			if key in user_fav:
 				user_fav[key] = user_fav[key] + value
 			else:	
 				user_fav[key] = value
-	#print (user_fav)
+	
 	if user_fav != {}:
-		user_favourite_language = max(user_fav.iteritems(), key = operator.itemgetter(1))[0]	
+		user_favourite_language = maxLanguages(user_fav)	
 	else: 
 		user_favourite_language = 'Nothing'
 	#print(user_favourite_language)
@@ -95,10 +105,21 @@ for i in user_list:
 	returned_language = find_repos(i)
 	if returned_language == '':
 		returned_language = 'Nothing'
-	if language_count.has_key(returned_language):
+	if returned_language in language_count:
 		language_count[returned_language] = language_count[returned_language] + 1
 	else: 
 		language_count[returned_language] = 1
-
+language_list = []
+language_value = []
 print(language_count)
+for i in language_count:
+	language_list.append(i)
+	language_value.append(language_count[i])
+
+fig = pl.figure
+pl.plot(language_list, language_value)
+pl.savefig('./test1.png')
+pl.show()
+
+pl.close()
 

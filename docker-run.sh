@@ -1,1 +1,1 @@
-docker run -it github-get $1 $2 $3
+docker run -it my-github $1 $2 $3
