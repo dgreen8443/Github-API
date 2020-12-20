@@ -4,3 +4,5 @@ authkey.txt
 user.txt
 tDockerfile2.txt
 *.png
+*.bat
+run.sh
