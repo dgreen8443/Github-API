@@ -133,7 +133,9 @@ def find_repos(user):
 	response = requests.get(url,auth=(username, access_token))
 	
 	user_lang = []
+	
 	for i in response.json():
+	
 		repo_list.append(i["full_name"])
 		res = get_language(i["full_name"])
 		user_lang.append(res)
@@ -250,7 +252,7 @@ def commit_size():
 # Main
 ###############################
 
-#commit_size()
+commit_size()
 
 target_fav = find_repos(target)
 print(target_fav)
