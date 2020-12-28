@@ -1,1 +1,1 @@
-docker build --tag my-github .
+docker build -t my-github .
