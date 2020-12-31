@@ -7,11 +7,9 @@ import numpy as np
 import matplotlib as mp
 import matplotlib.pyplot as pl
 from PIL import Image
-from IPython.display import Image as Img
-from IPython.display import display
 
 
-mp.use("TkAgg")
+#mp.use("TkAgg")
 
 target = 'test'
 ################################################################
@@ -41,16 +39,16 @@ def response_check(response):
 # takes dictionary and orders by value - splits into seperate lists #
 ################################################################
 def ordering(dictionary,type):
-	print(dictionary)
+	#print(dictionary)
 	x = sorted(dictionary.items(), key = lambda kv:(kv[1],kv[0]))
-	print(x)
+	#print(x)
 	key = []
 	value = []
 	for i in x:
 		key.append(i[0])
 		value.append(i[1])
-	print(key)
-	print(value)	
+	#print(key)
+	#print(value)	
 	if type == "followers":
 		plotting_two_datasets_followers(key, value)
 	else:
@@ -66,18 +64,18 @@ def plotting_two_datasets_following(x, y):
 	ax = fig.add_subplot(111)
 	ax.set_title("Laguage distribution of accounts target is following")
 	ax.bar(x, y)
-	ax.set_xticklabels(x, rotation=45)
+	ax.set_xticks(x)#, rotation=45)
 
-	pl.savefig("/external/" + target + '_following_languages.png')
+	pl.savefig("/external/following_languages.png")
 
 def plotting_two_datasets_followers(x, y):	
 	fig = pl.figure(figsize=(12,6))
 	ax = fig.add_subplot(111)
 	ax.set_title("Laguage distribution of target's followers")
 	ax.bar(x, y)
-	ax.set_xticklabels(x, rotation=45)
+	ax.set_xticks(x)#, rotation=45)
 
-	pl.savefig("/external/" + target + '_followers_languages.png')
+	pl.savefig("/external/followers_languages.png")
 	#pl.show()
 	#pl.close()
 
@@ -93,36 +91,34 @@ def plotting_four_datasets(x1, y1, y2, y3, y4):
 	pl.xlabel("Commit #")
 	pl.ylabel("Lines per commit")
 	pl.title("Lines added/deleted per commit")
-	pl.savefig(target + '_commits.png')
 	pl.legend()
+	pl.savefig("/external/commits.png")
+
 	#pl.show()
 
-################################################################
-# Sample dictionary to speed up tests #
-################################################################
-if sys.argv[1] == 'test':
-	temp = {'Rust': 1, 'HTML': 2, 'LabVIEW': 1, 'JavaScript': 5, 'C++': 3, 'C': 3, 'Java': 2, 'Python': 6, 'Jupyter Notebook': 3, 'CSS': 1, 'Objective-C': 1, 'TypeScript': 1, 'PHP': 1}
-	ordering(temp)
-	
 ################################################################
 # Github accesing for data #
 ################################################################
 
-else :
-	if len(sys.argv) < 2:
-		with  open('./authkey.txt', 'r') as reader:
-			access_token = reader.read()
-		with open('./user.txt', 'r') as reader:
-			username = reader.read()
-		target = 'dgreen8443'
 
-	else: 
-		access_token = sys.argv[3]
-		username = sys.argv[2]
-		target = sys.argv[1]
+if len(sys.argv) < 2:
+	with  open('./auth.txt', 'r') as reader:
+		access_token = reader.read().rstrip()
+		
+	with open('./user.txt', 'r') as reader:
+		username = reader.read().rstrip()
+		
+	with open('./target.txt', 'r') as reader:
+		target = reader.read().rstrip()
+		
+
+else: 
+	access_token = sys.argv[3]
+	username = sys.argv[2]
+	target = sys.argv[1]
 
 my_headers = {username : access_token}
-print (my_headers)
+
 
 ##############################################################
 # Take the target user and generate the list of followers #
@@ -140,7 +136,6 @@ def get_followers(user):
 ##############################################################
 def get_following(user):
 	url = 'https://api.github.com/users/' + user + '/following'
-	print(username + "\n" + access_token)
 	response = requests.get(url,auth=(username, access_token))
 	response_check(response)
 	if limit_exceeded == False:
@@ -244,13 +239,16 @@ def commit_changes(repo, commit):
 		total_commits.append(total_commits[-1] + 1) 
 		avg_additions.append(int(target_additions[-1] / total_commits[-1]))
 		avg_removals.append(int(target_removals[-1] / total_commits[-1]))
+		#print(hist_additions,hist_removals,avg_additions,avg_removals)
 		
 		
 
 def target_repos():
 	url = 'https://api.github.com/users/' + target + '/repos'
+	
 	response = requests.get(url,auth=(username, access_token))
 	response_check(response)
+	
 	if limit_exceeded == False:
 		for i in response.json():
 			target_repo_list.append(i['full_name'])
@@ -261,20 +259,20 @@ def target_commits(repo):
 	response = requests.get(url,auth=(username, access_token))
 	response_check(response)
 	if limit_exceeded == False:
+		
 		target_commits = []
 		for i in response.json():
-			if isinstance(i, int):
-				target_commits.append(i['sha'])
-			else:
-				return
+			target_commits.append(i['sha'])
+
+			
 		for x in target_commits:
-			#print(x)
 			commit_changes(repo, x)
 
 def commit_size():
 	target_repos()
 	
 	for i in target_repo_list:
+		
 		target_commits(i)
 	
 	plotting_four_datasets(total_commits, hist_additions, hist_removals, avg_additions, avg_removals)
@@ -292,13 +290,14 @@ def commit_size():
 # Main
 ###############################
 print("Accessing Github for data, this may take a while")
-#commit_size()
+commit_size()
 
 target_fav = find_repos(target)
+print(target + "'s favorite language:")
 print(target_fav)
 # followers
 get_followers(target)
-print(user_list)
+#print(user_list)
 for i in user_list:
 	returned_language = find_repos(i)
 	if returned_language == '':
@@ -314,7 +313,7 @@ ordering(language_dictionary,"followers")
 user_list = []
 language_dictionary = {}
 get_following(target)
-print(user_list)
+#print(user_list)
 for i in user_list:
 	returned_language = find_repos(i)
 	if returned_language == '':
@@ -324,3 +323,4 @@ for i in user_list:
 	else: 
 		language_dictionary[returned_language] = 1
 
+ordering(language_dictionary, "following")

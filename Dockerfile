@@ -17,8 +17,11 @@ RUN mkdir /external
 VOLUME /external
 
 COPY Docker_Access.py ./
+COPY target.txt ./
+COPY user.txt ./
+COPY auth.txt ./
 
-#CMD [ "python", "./Docker_Access.py",  "dgreen8443", "dgreen8443", "b8a8cdf531d6507f66c897c0c146859986cf831c"]
+#CMD [ "python", "./Docker_Access.py"]
 
 
 

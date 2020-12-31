@@ -9,3 +9,7 @@ or
 run the command 
 
 "python3 Access.py $target_user $username $authkey"
+
+
+If using the Docker image, on Windows -> "my-docker.bat $target $ username $authkey"
+							  Linux   -> "./my-docker.sh $target $username $authkey"

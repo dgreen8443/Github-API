@@ -31,7 +31,7 @@ total_commits = [0]
 avg_additions = [0]
 avg_removals = [0]
 limit_exceeded = False
-#fig, (ax1, ax2, ax3) = pl.subplots(3)
+
 def response_check(response):
 	global limit_exceeded
 	if response.status_code == 403:
@@ -93,8 +93,9 @@ def plotting_four_datasets(x1, y1, y2, y3, y4):
 	pl.xlabel("Commit #")
 	pl.ylabel("Lines per commit")
 	pl.title("Lines added/deleted per commit")
-	pl.savefig(target + '_commits.png')
 	pl.legend()
+	pl.savefig(target + '_commits.png')
+
 	#pl.show()
 
 ################################################################
@@ -115,7 +116,7 @@ else:
 	target = sys.argv[1]
 
 my_headers = {username : access_token}
-print (my_headers)
+
 
 ##############################################################
 # Take the target user and generate the list of followers #
@@ -236,6 +237,7 @@ def commit_changes(repo, commit):
 		total_commits.append(total_commits[-1] + 1) 
 		avg_additions.append(int(target_additions[-1] / total_commits[-1]))
 		avg_removals.append(int(target_removals[-1] / total_commits[-1]))
+		#print(hist_additions,hist_removals,avg_additions,avg_removals)
 		
 		
 
@@ -252,13 +254,14 @@ def target_commits(repo):
 	url = 'https://api.github.com/repos/' + repo + '/commits'
 	response = requests.get(url,auth=(username, access_token))
 	response_check(response)
+	
 	if limit_exceeded == False:
+		
 		target_commits = []
 		for i in response.json():
-			if isinstance(i, int):
-				target_commits.append(i['sha'])
-			else:
-				return
+			target_commits.append(i['sha'])
+
+			
 		for x in target_commits:
 			commit_changes(repo, x)
 
@@ -266,6 +269,7 @@ def commit_size():
 	target_repos()
 	
 	for i in target_repo_list:
+		
 		target_commits(i)
 	
 	plotting_four_datasets(total_commits, hist_additions, hist_removals, avg_additions, avg_removals)
