@@ -34,7 +34,7 @@ def response_check(response):
 	global limit_exceeded
 	if response.status_code != 200:
 		limit_exceeded = True
-		print("API access limit exceeded, please try again later")
+		print("API access returned:" + "{}".format(response.status_code))
 ################################################################
 # takes dictionary and orders by value - splits into seperate lists #
 ################################################################
