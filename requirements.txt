@@ -1,4 +1,4 @@
-numpy=1.0
-matplotlib=3.3.3
-PIL=1.0
-IPython.display=1
+requests==2.25.1
+numpy==1.19.4
+matplotlib==3.3.3
+

@@ -32,7 +32,7 @@ limit_exceeded = False
 
 def response_check(response):
 	global limit_exceeded
-	if response.status_code == 403:
+	if response.status_code != 200:
 		limit_exceeded = True
 		print("API access limit exceeded, please try again later")
 ################################################################

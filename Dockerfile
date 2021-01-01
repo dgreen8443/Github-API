@@ -12,16 +12,13 @@ COPY requirements.txt ./
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN mkdir /external
-
-VOLUME /external
 
 COPY Docker_Access.py ./
 COPY target.txt ./
 COPY user.txt ./
 COPY auth.txt ./
 
-#CMD [ "python", "./Docker_Access.py"]
+CMD [ "python", "./Docker_Access.py"]
 
 
 

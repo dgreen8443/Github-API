@@ -1,7 +1,8 @@
 
 README.md~
-authkey.txt
+auth.txt
 user.txt
+target.txt
 tDockerfile2.txt
 *.png
 *.bat
